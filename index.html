@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: lightblue;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/index.html">꿈팁</a>
+      <span class = "ms-auto mx-2" id= "userName"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled"></a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active " aria-current="page" href="/login.html">로그인</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active " aria-current="page" href="/register.html">회원가입</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active " aria-current="page" id="logout" href="#">로그아웃</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mainTwoBtn">
+    <button type="submit" class="btn btn-primary" id="newButton1">
+      <p>교육지원</p>
+      <p class="smaller-font">풍부한 교육, 꿈을 실현</p>
+    </button>
+    <button type="submit" class="btn btn-primary" id="newButton2">
+      <p>심리지원</p>
+      <p class="smaller-font">우리는 함께 치유합니다</p>
+    </button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+ 
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuOIdgh3TLJKo8P0e8ZVp5UUI-l34PGD4",
+      authDomain: "dreamtips-cdc45.firebaseapp.com",
+      projectId: "dreamtips-cdc45",
+      storageBucket: "dreamtips-cdc45.appspot.com",
+      messagingSenderId: "367359194199",
+      appId: "1:367359194199:web:be9709f9dca9ddce485f12",
+      measurementId: "G-S3SCS5DY6Q"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <script>
+
+    
+      $('#newButton1').click(function(){
+          window.location.href="/edumain.html"
+      })
+      $('#newButton2').click(function(){
+          window.location.href="/psymain.html"
+      })
+
+      $('#logout').click(function(){
+          firebase.auth().signOut()
+          localStorage.clear();
+          window.location.href="/index.html"
+      })
+  </script>
+
+  <script>
+
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user);
+          console.log(user.displayName);
+          localStorage.setItem('user', JSON.stringify(user));
+          hideLoginElements();
+        } else {
+          showLoginElements();
+        }
+      });
+
+      function hideLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').hide();
+        $('.navbar-nav .nav-link[href="/register.html"]').hide();
+        $('.navbar-nav .nav-link[id="logout"]').show();
+        var disName = localStorage.getItem('user')
+        $('#userName').html(JSON.parse(disName).displayName)
+      }
+
+      function showLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').show();
+        $('.navbar-nav .nav-link[href="/register.html"]').show();
+        $('.navbar-nav .nav-link[id="logout"]').hide();
+      }
+  </script>
+
+</body>
+</html>

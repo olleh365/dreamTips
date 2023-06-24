@@ -1,0 +1,63 @@
+.mainTwoBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.smaller-font {
+  font-size: 20px;
+}
+#newButton1{
+  width: 400px;
+  height: 400px;
+  font-size: 45px;
+  font-weight: bold;
+  margin: 10px;
+  background-color: #6abf6a; /* Adjusted shade of green */
+  border-color: #6abf6a; /* Adjusted shade of green */
+  color: #fff; /* Text color */
+
+}
+#newButton2 {
+  width: 400px;
+  height: 400px;
+  font-size: 45px;
+  font-weight: bold;
+  margin: 10px;
+  background-color: #5e9fff; /* Adjusted shade of green */
+  border-color: #5e9fff; /* Adjusted shade of green */
+  color: #fff; /* Text color */
+}
+
+#newButton1:hover{
+  background-color: #589c58; 
+}
+#newButton2:hover {
+  background-color: #1d5cb6; 
+  border-color: #1d5cb6; 
+}
+
+.webinfo {
+  display: flex;
+  padding: 10px;
+}
+.webinfo {
+  max-width: 200px;
+  width: 100%;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+}
+.webinfo .price {
+  font-size: 16px;
+  font-weight: 600;
+}
+.webinfo .title {
+  font-size: 17px;
+  font-weight: 600;
+}
+.webinfo .date {
+  color: grey;
+  font-size: 13px;
+}
