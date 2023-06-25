@@ -39,9 +39,12 @@
 <body>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/index.html">꿈팁</a>
-      <span class = "ms-auto mx-2" id= "userName"></span>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="/index.html">
+        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/tiplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
+      </a>
+      <span class="ms-auto mx-2" id="userName"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
@@ -55,27 +58,35 @@
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" href="/login.html">로그인</a>
+            <a class="nav-link active" aria-current="page" href="/login.html">로그인</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" href="/register.html">회원가입</a>
+            <a class="nav-link active" aria-current="page" href="/register.html">회원가입</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" id="logout" href="#">로그아웃</a>
+            <a class="nav-link active" aria-current="page" id="logout" href="#">로그아웃</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <h1>교육지원</h1>
+  <h1 class="mx-3 mainTitle">외부장학금 지원</h1>
   <p>
 
   </p>
+  <div class="container mt-3">
+    <!-- <div class="webinfo">
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
+      <div class="flex-grow-1 p-4">
+        <h5 class="title">테스트</h5>
+        <p class="price">무료</p>
+        <p class="inspecTime">10분</p>
+        <p class="float-end">?0</p>
+      </div>
+    </div> -->
+  </div>
 
-  <button class="edu-text" id="scholarship" onclick="navigateTo('/index.html')">
-    <span>나중에 추가할것</span>
-  </button>
 
   
 
@@ -102,6 +113,70 @@
   </script>
 
   <script>
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    db.collection('stuScholarList').get().then((result) => {
+        result.forEach((doc) => {
+            const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : ''; // Check if detail field exists
+            
+            var template = `<div class="webinfo">
+            <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
+            <div class="flex-grow-1 p-4">
+                <h5 class="title">${doc.data().webTitle}</h5>
+                <p class="detail-name"></p>
+                <p class="detail">${detailText}</p>
+                <p class="float-end">
+                    <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
+                    <span class="like-count">${doc.data().like}</span>
+                </p>
+                <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
+                    Like
+                </button>
+                <p></p>
+                <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
+            </div>
+            </div>`;
+            $('.container').append(template);
+            });
+
+      // Add event listener to like button
+      $('.like-button').click(function() {
+        const docId = $(this).data('doc-id');
+        const likeCountElement = $(this).siblings('.float-end').find('.like-count');
+        const likeIconElement = $(this).siblings('.float-end').find('.like-icon');
+        const currentLikeCount = parseInt(likeCountElement.text());
+        let liked = $(this).data('liked') === 'true';
+
+        if (liked) {
+          // Decrease like count and update like status
+          db.collection('stuScholarList').doc(docId).update({
+            like: currentLikeCount - 1,
+            liked: false
+          }).then(() => {
+            likeCountElement.text(currentLikeCount - 1);
+            likeIconElement.removeClass('filled');
+            $(this).data('liked', 'false');
+          }).catch((error) => {
+            console.log(error);
+          });
+        } else {
+          // Increase like count and update like status
+          db.collection('stuScholarList').doc(docId).update({
+            like: currentLikeCount + 1,
+            liked: true
+          }).then(() => {
+            likeCountElement.text(currentLikeCount + 1);
+            likeIconElement.addClass('filled');
+            $(this).data('liked', 'true');
+          }).catch((error) => {
+            console.log(error);
+          });
+        }
+      });
+    });
+
+
     $('#logout').click(function(){
       firebase.auth().signOut()
       localStorage.clear();

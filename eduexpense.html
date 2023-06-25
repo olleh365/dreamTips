@@ -4,14 +4,37 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>EduMain</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <link href="main.css" rel="stylesheet">
   <style>
     body {
-      background-color: lightblue;
+      background-color: #c9efc9;
     }
   </style>
+    <style>
+        .edu-text {
+        background-color: transparent;
+        border: none;
+        color:black; /* Light color that blends with the background */
+        cursor: pointer;
+        font-size: 24px;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        }
+
+        .edu-text span {
+        margin: 4px 0;
+        }
+
+        .edu-text:focus {
+        outline: none;
+        }
+    </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -47,18 +70,25 @@
       </div>
     </div>
   </nav>
-  
 
-  <div class="mainTwoBtn">
-    <button type="submit" class="btn btn-primary" id="newButton1">
-      <p>교육지원</p>
-      <p class="smaller-font">풍부한 교육, 꿈을 실현</p>
-    </button>
-    <button type="submit" class="btn btn-primary" id="newButton2">
-      <p>심리지원</p>
-      <p class="smaller-font">우리는 함께 치유합니다</p>
-    </button>
+  <h1 class="mx-3 mainTitle">한국장학재단</h1>
+  <p>
+
+  </p>
+  <div class="container mt-3">
+    <!-- <div class="webinfo">
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
+      <div class="flex-grow-1 p-4">
+        <h5 class="title">테스트</h5>
+        <p class="price">무료</p>
+        <p class="inspecTime">10분</p>
+        <p class="float-end">?0</p>
+      </div>
+    </div> -->
   </div>
+
+
+  
 
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
@@ -83,25 +113,83 @@
   </script>
 
   <script>
-    const storage = firebase.storage();
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
-      $('#newButton1').click(function(){
-          window.location.href="/edumain.html"
-      })
-      $('#newButton2').click(function(){
-          window.location.href="/psymain.html"
-      })
+    db.collection('eduexpense').get().then((result) => {
+        result.forEach((doc) => {
+            const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : ''; // Check if detail field exists
+            
+            var template = `<div class="webinfo">
+            <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
+            <div class="flex-grow-1 p-4">
+                <h5 class="title">${doc.data().webTitle}</h5>
+                <p class="detail-name"></p>
+                <p class="detail">${detailText}</p>
+                <p class="float-end">
+                    <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
+                    <span class="like-count">${doc.data().like}</span>
+                </p>
+                <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
+                    Like
+                </button>
+                <p></p>
+                <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
+            </div>
+            </div>`;
+            $('.container').append(template);
+            });
 
-      $('#logout').click(function(){
-          firebase.auth().signOut()
-          localStorage.clear();
-          window.location.href="/index.html"
-      })
+      // Add event listener to like button
+      $('.like-button').click(function() {
+        const docId = $(this).data('doc-id');
+        const likeCountElement = $(this).siblings('.float-end').find('.like-count');
+        const likeIconElement = $(this).siblings('.float-end').find('.like-icon');
+        const currentLikeCount = parseInt(likeCountElement.text());
+        let liked = $(this).data('liked') === 'true';
+
+        if (liked) {
+          // Decrease like count and update like status
+          db.collection('eduexpense').doc(docId).update({
+            like: currentLikeCount - 1,
+            liked: false
+          }).then(() => {
+            likeCountElement.text(currentLikeCount - 1);
+            likeIconElement.removeClass('filled');
+            $(this).data('liked', 'false');
+          }).catch((error) => {
+            console.log(error);
+          });
+        } else {
+          // Increase like count and update like status
+          db.collection('eduexpense').doc(docId).update({
+            like: currentLikeCount + 1,
+            liked: true
+          }).then(() => {
+            likeCountElement.text(currentLikeCount + 1);
+            likeIconElement.addClass('filled');
+            $(this).data('liked', 'true');
+          }).catch((error) => {
+            console.log(error);
+          });
+        }
+      });
+    });
+
+
+    $('#logout').click(function(){
+      firebase.auth().signOut()
+      localStorage.clear();
+      window.location.href="/index.html"
+    })
+
+    function navigateTo(url) {
+      window.location.href = url;
+    }
+
   </script>
 
   <script>
-
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           console.log(user);
@@ -112,6 +200,7 @@
           showLoginElements();
         }
       });
+
 
       function hideLoginElements() {
         $('.navbar-nav .nav-link[href="/login.html"]').hide();
@@ -126,6 +215,7 @@
         $('.navbar-nav .nav-link[href="/register.html"]').show();
         $('.navbar-nav .nav-link[id="logout"]').hide();
       }
+
   </script>
 
 </body>

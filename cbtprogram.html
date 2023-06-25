@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduMain</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: lightblue;
+    }
+  </style>
+    <style>
+        .edu-text {
+        background-color: transparent;
+        border: none;
+        color:black; /* Light color that blends with the background */
+        cursor: pointer;
+        font-size: 24px;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        }
+
+        .edu-text span {
+        margin: 4px 0;
+        }
+
+        .edu-text:focus {
+        outline: none;
+        }
+
+        .game-container {
+        text-align: center;
+        margin-top: 50px;
+        }
+
+        .question {
+        font-size: 24px;
+        margin-bottom: 20px;
+        }
+
+        .options {
+        display: flex;
+        justify-content: center;
+        }
+
+        .option {
+        margin: 0 10px;
+        padding: 10px 20px;
+        background-color: lightblue;
+        cursor: pointer;
+        }
+
+        .option:hover {
+        background-color: cornflowerblue;
+        }
+ 
+        .result {
+        font-size: 18px;
+        margin-top: 20px;
+        }
+
+    </style>
+
+
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/index.html">
+        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/tiplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
+      </a>
+      <span class="ms-auto mx-2" id="userName"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled"></a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/login.html">로그인</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/register.html">회원가입</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" id="logout" href="#">로그아웃</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+
+  <div class="game-container">
+    <h1>청소년 우울증에 대한 CBT 게임</h1>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+ 
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuOIdgh3TLJKo8P0e8ZVp5UUI-l34PGD4",
+      authDomain: "dreamtips-cdc45.firebaseapp.com",
+      projectId: "dreamtips-cdc45",
+      storageBucket: "dreamtips-cdc45.appspot.com",
+      messagingSenderId: "367359194199",
+      appId: "1:367359194199:web:be9709f9dca9ddce485f12",
+      measurementId: "G-S3SCS5DY6Q"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <script>
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    
+    let questions = [];
+
+    function initializeQuestions() {
+    questions = [
+    {
+      type: 'multipleChoice',
+      question: '일반적인 인지 왜곡이란 무엇인가요?',
+      options: ['모든 것이 검은색 또는 흰색으로 나누어진 사고', '타인의 생각을 읽는 것', '모든 상황을 최악으로 생각하는 것', '한 가지 사건을 기반으로 일반화하는 것'],
+      correctAnswer: 0
+    },
+    {
+      type: 'multipleChoice',
+      question: '부정적인 생각에 대항하는 효과적인 방법은 무엇인가요?',
+      options: ['자기-동정 실천하기', '긍정적인 긍정글 낭독하기', '생각에 대한 증거를 조사하고 비판하기', '생각을 무시하기'],
+      correctAnswer: 2
+    },
+    {
+      type: 'multipleChoice',
+      question: '다음 중 한 가지 이완 기법의 예는 무엇인가요?',
+      options: ['깊은 숨을 들이마시기', '부정적인 생각에 집착하기', '사회적인 상황 피하기', '과도한 걱정하기'],
+      correctAnswer: 0
+    },
+    {
+      type: 'multipleChoice',
+      question: '인지 구조화의 전형적인 특징은 무엇인가요?',
+      options: ['인지 왜곡을 파악하기', '비현실적인 목표 설정하기', '어려운 감정 피하기', '자기 비판하기'],
+      correctAnswer: 0
+    },
+    {
+      type: 'multipleChoice',
+      question: '행동 활성화의 CBT에서의 역할은 무엇인가요?',
+      options: ['사회적 고립 증가시키기', '즐거운 활동 피하기', '목표 설정하고 즐거운 활동에 참여하기', '부정적인 생각에만 집중하기'],
+      correctAnswer: 2
+    },
+    {
+      type: 'trueFalse',
+      question: '참 또는 거짓: 모든 것을 과장하고 최악의 결과를 상상하는 것이 카타스트로핑이다.',
+      correctAnswer: true
+    },
+    {
+      type: 'trueFalse',
+      question: '참 또는 거짓: 한 가지 사건이나 제한된 증거를 기반으로 일반적인 결론을 내리는 것이 과일반화이다.',
+      correctAnswer: true
+    },
+    // Add more questions here
+  ];
+    }
+
+    let score = 0;
+    let currentQuestionIndex = 0;
+
+    function displayQuestion() {
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const currentQuestion = questions[currentQuestionIndex];
+
+    questionElement.textContent = currentQuestion.question;
+    optionsElement.innerHTML = '';
+
+    if (currentQuestion.type === 'multipleChoice') {
+        for (let i = 0; i < currentQuestion.options.length; i++) {
+        const option = currentQuestion.options[i];
+        const optionElement = document.createElement('div');
+        optionElement.classList.add('option');
+        optionElement.textContent = option;
+        optionElement.addEventListener('click', () => checkAnswer(i));
+        optionsElement.appendChild(optionElement);
+        }
+    } else if (currentQuestion.type === 'trueFalse') {
+        const trueButton = document.createElement('button');
+        trueButton.textContent = 'True';
+        trueButton.addEventListener('click', () => checkAnswer(true));
+        optionsElement.appendChild(trueButton);
+
+        const falseButton = document.createElement('button');
+        falseButton.textContent = 'False';
+        falseButton.addEventListener('click', () => checkAnswer(false));
+        optionsElement.appendChild(falseButton);
+    }
+    }
+
+    function checkAnswer(selectedOption) {
+    const currentQuestion = questions[currentQuestionIndex];
+
+    if (selectedOption === currentQuestion.correctAnswer) {
+        score += 1;
+    }
+
+    currentQuestionIndex += 1;
+
+    if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+    } else {
+        displayScore();
+    }
+    }
+
+    function displayScore() {
+        const resultElement = document.getElementById('result');
+        const scoreElement = document.createElement('p');
+        scoreElement.textContent = '당신의 점수 : ' + score + '/' + questions.length;
+        resultElement.innerHTML = '';
+        resultElement.appendChild(scoreElement);
+
+        const messageElement = document.createElement('p');
+        if (score >= 4) {
+            messageElement.textContent = '잘하고 있어요!';
+        } else if (score >= 2) {
+            messageElement.textContent = '전문가의 도움이 필요해요';
+        } else {
+            messageElement.textContent = '전문가의 도움이 절실히 필요해요';
+        }
+        resultElement.appendChild(messageElement);
+        }
+
+    // Call the initializeQuestions function to populate the questions array
+    initializeQuestions();
+
+    // Call the displayQuestion function to start the game
+    displayQuestion();
+
+
+
+
+        $('#logout').click(function(){
+              firebase.auth().signOut()
+              localStorage.clear();
+              window.location.href="/index.html"
+          })
+
+          function navigateTo(url) {
+          window.location.href = url;
+        }
+      </script>
+      <script>
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              console.log(user);
+              console.log(user.displayName);
+              localStorage.setItem('user', JSON.stringify(user));
+              hideLoginElements();
+            } else {
+              showLoginElements();
+            }
+          });
+
+      function hideLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').hide();
+        $('.navbar-nav .nav-link[href="/register.html"]').hide();
+        $('.navbar-nav .nav-link[id="logout"]').show();
+        var disName = localStorage.getItem('user')
+        $('#userName').html(JSON.parse(disName).displayName)
+      }
+
+      function showLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').show();
+        $('.navbar-nav .nav-link[href="/register.html"]').show();
+        $('.navbar-nav .nav-link[id="logout"]').hide();
+      }
+  </script>
+
+</body>
+</html>

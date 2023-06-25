@@ -34,14 +34,32 @@
         .edu-text:focus {
         outline: none;
         }
+
+        .sophisticated-text {
+        font-size: 18px;
+        line-height: 1.6;
+        text-align: justify;
+        color: #555;
+        font-style: italic;
+      }
+
+      .sophisticated-text::first-letter {
+        font-size: 36px;
+        font-weight: bold;
+        color: #007bff;
+      }
+
     </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/index.html">꿈팁</a>
-      <span class = "ms-auto mx-2" id= "userName"></span>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="/index.html">
+        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/tiplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
+      </a>
+      <span class="ms-auto mx-2" id="userName"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
@@ -55,31 +73,31 @@
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" href="/login.html">로그인</a>
+            <a class="nav-link active" aria-current="page" href="/login.html">로그인</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" href="/register.html">회원가입</a>
+            <a class="nav-link active" aria-current="page" href="/register.html">회원가입</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" id="logout" href="#">로그아웃</a>
+            <a class="nav-link active" aria-current="page" id="logout" href="#">로그아웃</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <h1>교육지원</h1>
-  <p>
-
+  <h1 class="mx-3 mainTitle">교육지원</h1>
+  <p class="mx-3 sophisticated-text">
+    여기에 나와 있는 것들 외에도 다양하니, 직접 사이트에 들어가서 알아보고 신청해보고 능동적으로 맞춤혜택을 누려보세요!<br> 더 나은 삶을 위해 정보를 잘 활용하며 자기주도성을 가지고 힘차게 살아가는 멋진 청소년이 되길 응원합니다!
   </p>
 
-  <button class="edu-text" id="scholarship" onclick="navigateTo('/scholarship.html')">
-    <span>외부 장학금 신청</span>
+  <button class="mx-3 edu-text" id="financialSup" onclick="navigateTo('/financialSup.html')">
+    <span>금전지원</span>
   </button>
-  <button class="edu-text" id="mentorship" onclick="navigateTo('/mentoring.html')">
+  <button class="mx-3 edu-text" id="mentorship" onclick="navigateTo('/mentoring.html')">
     <span>맨토링 서비스</span>
   </button>
-  <button class="edu-text" id="textbook" onclick="navigateTo('/textbooksup.html')">
+  <button class="mx-3 edu-text" id="textbook" onclick="navigateTo('/textbooksup.html')">
     <span>교재 지원 서비스</span>
   </button>
 

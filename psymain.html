@@ -70,9 +70,12 @@
 <body>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/index.html">꿈팁</a>
-      <span class = "ms-auto mx-2" id= "userName"></span>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="/index.html">
+        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/tiplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
+      </a>
+      <span class="ms-auto mx-2" id="userName"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
@@ -86,38 +89,38 @@
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" href="/login.html">로그인</a>
+            <a class="nav-link active" aria-current="page" href="/login.html">로그인</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" href="/register.html">회원가입</a>
+            <a class="nav-link active" aria-current="page" href="/register.html">회원가입</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active " aria-current="page" id="logout" href="#">로그아웃</a>
+            <a class="nav-link active" aria-current="page" id="logout" href="#">로그아웃</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <h1>심리지원</h1>
+  <h1 class="mx-3 mainTitle">심리지원</h1>
   <p>
 
   </p>
 
-  <button class="edu-text" id="selfdiag" onclick="navigateTo('/selfdiag.html')">
+  <button class="mx-3 edu-text" id="selfdiag" onclick="navigateTo('/selfdiag.html')">
     <span>우울증 자가 진단</span>
   </button>
-  <button class="edu-text" id="mentorship" onclick="navigateTo('/mentoring.html')">
+  <button class="mx-3 edu-text" id="inspecsite" onclick="navigateTo('/psyinspecsite.html')">
+    <span>기타 심리검사 사이트</span>
+  </button>
+  <button class="mx-3 edu-text" id="cbtprogram" onclick="navigateTo('/cbtprogram.html')">
+    <span>CBT(컴퓨터 기반 우울증 인지행동치료 프로그램)</span>
+  </button>
+  <button class="mx-3 edu-text" id="mentorship" onclick="navigateTo('/mentoring.html')">
     <span>관련 치료 프로그램(미완)</span>
   </button>
-  <button class="edu-text" id="textbook" onclick="navigateTo('/textbooksup.html')">
+  <button class="mx-3 edu-text" id="textbook" onclick="navigateTo('/textbooksup.html')">
     <span>관련 센터(미완)</span>
-  </button>
-  <button class="edu-text" id="careerLink" onclick="openCareerNetLink()">
-    <span>커리어넷 연결 링크</span>
-  </button>
-  <button class="edu-text" id="textbook" onclick="navigateTo('/textbooksup.html')">
-    <span>MLST 학습 주도 검사(미완)</span>
   </button>
 
 
@@ -172,10 +175,6 @@
   </script>
 
   <script>
-    function openCareerNetLink() {
-    window.open('https://www.career.go.kr/mobile/psycho/intro', '_blank');
-    }
-
     $('#logout').click(function(){
           firebase.auth().signOut()
           localStorage.clear();

@@ -1,3 +1,24 @@
+.navbar {
+  background-color: #f8f8f8; /* Adjust the color to match your logo */
+}
+
+.navbar-logo {
+  display: inline-block;
+  vertical-align: middle;
+  height: 45px; /* Adjust the height as needed */
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+}
+
+#userName {
+  margin-left: auto;
+  margin-right: 10px; /* Adjust the margin as needed */
+}
+
 .mainTwoBtn {
   display: flex;
   justify-content: center;
@@ -38,12 +59,11 @@
   border-color: #1d5cb6; 
 }
 
+
 .webinfo {
   display: flex;
   padding: 10px;
-}
-.webinfo {
-  max-width: 200px;
+  max-width: 600px;
   width: 100%;
   border-radius: 10px;
   background-size: cover;
@@ -54,10 +74,19 @@
   font-weight: 600;
 }
 .webinfo .title {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
 }
-.webinfo .date {
+.webinfo .inspecTime {
   color: grey;
   font-size: 13px;
+}
+.webinfo .detail-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+.webinfo .detail {
+  white-space: pre-line;
+  font-size: 14px;
+  font-weight: 400;
 }

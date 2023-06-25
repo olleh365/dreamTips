@@ -102,7 +102,7 @@
     </div>
   </nav>
 
-  <h1 class="mx-3 mainTitle">우울증 자가 진단</h1>
+  <h1 class="mx-3 mainTitle">기타 심리검사 사이트</h1>
   <p>
 
   </p>
@@ -146,27 +146,29 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    db.collection('webinfo').get().then((result) => {
-      result.forEach((doc) => {
-        var template = `<div class="webinfo">
-          <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
-          <div class="flex-grow-1 p-4">
-              <h5 class="title">${doc.data().webTitle}</h5>
-              <p class="price">가격 : ${doc.data().price}</p>
-              <p class="inspecTime">검사시간 : ${doc.data().inspecTime}</p>
-              <p class="float-end">
-                <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
-                <span class="like-count">${doc.data().like}</span>
-              </p>
-              <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
-                좋아요
-              </button>
-              <p></p>
-              <a class="link-button" href="${doc.data().link}" target="_blank">홈페이지 방문하기</a>
-          </div>
-        </div>`;
-        $('.container').append(template);
-      });
+    db.collection('psyInspectSite').get().then((result) => {
+        result.forEach((doc) => {
+            const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : ''; // Check if detail field exists
+            
+            var template = `<div class="webinfo">
+            <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
+            <div class="flex-grow-1 p-4">
+                <h5 class="title">${doc.data().webTitle}</h5>
+                <p class="detail-name"></p>
+                <p class="detail">${detailText}</p>
+                <p class="float-end">
+                    <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
+                    <span class="like-count">${doc.data().like}</span>
+                </p>
+                <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
+                    Like
+                </button>
+                <p></p>
+                <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
+            </div>
+            </div>`;
+            $('.container').append(template);
+            });
 
       // Add event listener to like button
       $('.like-button').click(function() {
@@ -178,7 +180,7 @@
 
         if (liked) {
           // Decrease like count and update like status
-          db.collection('webinfo').doc(docId).update({
+          db.collection('psyInspectSite').doc(docId).update({
             like: currentLikeCount - 1,
             liked: false
           }).then(() => {
@@ -190,7 +192,7 @@
           });
         } else {
           // Increase like count and update like status
-          db.collection('webinfo').doc(docId).update({
+          db.collection('psyInspectSite').doc(docId).update({
             like: currentLikeCount + 1,
             liked: true
           }).then(() => {
@@ -203,11 +205,6 @@
         }
       });
     });
-
-
-        function openCareerNetLink() {
-        window.open('https://www.career.go.kr/mobile/psycho/intro', '_blank');
-        }
 
         $('#logout').click(function(){
               firebase.auth().signOut()
