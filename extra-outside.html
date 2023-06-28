@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>꿈팁 대외활동 팁</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/index.html">
+        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/toplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
+      </a>
+      <span class="ms-auto mx-2" id="userName"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled"></a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/login.html">로그인</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/register.html">회원가입</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" id="logout" href="#">로그아웃</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <h1 class="mx-3 mainTitle">공모전 & 대외활동</h1>
+  <p>
+
+  </p>
+  <div class="container mt-3">
+    <!-- <div class="webinfo">
+      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
+      <div class="flex-grow-1 p-4">
+        <h5 class="title">테스트</h5>
+        <p class="price">무료</p>
+        <p class="inspecTime">10분</p>
+        <p class="float-end">?0</p>
+        <div class="comment-container mt-3">
+          <h5>Comments</h5>
+          <textarea class="comment-input" placeholder="코맨트"></textarea>
+          <button class="add-comment-button">Add Comment</button>
+          <ul class="comment-list"></ul>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <button id="write-post-button" class="admin-button">글쓰기</button>
+
+  
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+ 
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuOIdgh3TLJKo8P0e8ZVp5UUI-l34PGD4",
+      authDomain: "dreamtips-cdc45.firebaseapp.com",
+      projectId: "dreamtips-cdc45",
+      storageBucket: "dreamtips-cdc45.appspot.com",
+      messagingSenderId: "367359194199",
+      appId: "1:367359194199:web:be9709f9dca9ddce485f12",
+      measurementId: "G-S3SCS5DY6Q"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <script>
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    
+
+    // Function to load comments for a specific post
+    function loadComments(postId) {
+    const commentList = $(`.webinfo[data-post-id="${postId}"] .comment-list`);
+
+    // Clear existing comments
+    commentList.empty();
+
+    // Retrieve comments from Firestore subcollection
+    db.collection('dudutip')
+        .doc(postId)
+        .collection('comments')
+        .orderBy('timestamp', 'asc')
+        .get()
+        .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const commentData = doc.data();
+            const commentItem = $('<li>').text(commentData.comment);
+            commentList.append(commentItem);
+        });
+        })
+        .catch((error) => {
+        console.log(error);
+        });
+    }
+
+    db.collection('dudutip').get().then((result) => {
+    result.forEach((doc) => {
+        const category = doc.data().category;
+        if(category === '대외활동'){ const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : '';
+
+        var template = `<div class="webinfo" data-post-id="${doc.id}">
+        <div class="thumbnail" style="background-image: url('${doc.data().imageUrl}')"></div>
+        <div class="flex-grow-1 p-4">
+          <h5 class="title"><a href="${doc.data().link}" class="title-link">${doc.data().webTitle} </a></h5>
+            <br>
+            <p class="detail"><strong>설명 : </strong>${detailText}</p>
+            <p class="detail"><strong>지원기간 : </strong>${doc.data().period}</p>
+            <p class="detail"><strong>특이사항 : </strong>${doc.data().specifics}</p>
+            <p class="float-end">
+            <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
+            <span class="like-count">${doc.data().like}</span>
+            </p>
+            <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
+            좋아요
+            </button>
+            <p></p>
+            <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
+            <div class="comment-container mt-3">
+            <h5>코맨트</h5>
+            <ul class="comment-list"></ul>
+            <textarea class="comment-input" placeholder="댓글 내용을 입력하시오"></textarea>
+            <button class="add-comment-button">저장</button>
+            <button class="edit-post-button">게시글 수정</button>
+
+            </div>
+        </div>
+        </div>`;
+
+    $('.container').append(template);
+
+    const postId = doc.id;
+
+    // Add event listener to like button
+    $(`.like-button[data-doc-id="${postId}"]`).click(function () {
+    const docId = $(this).data('doc-id');
+        const likeCountElement = $(this).siblings('.float-end').find('.like-count');
+        const likeIconElement = $(this).siblings('.float-end').find('.like-icon');
+        let currentLikeCount = parseInt(likeCountElement.text());
+        let liked = $(this).data('liked') === 'true';
+
+        if (liked) {
+        // Decrease like count and update like status
+        currentLikeCount--;
+        db.collection('dudutip')
+            .doc(docId)
+            .update({
+            like: currentLikeCount,
+            liked: false
+            })
+            .then(() => {
+            likeCountElement.text(currentLikeCount);
+            likeIconElement.removeClass('filled');
+            $(this).data('liked', 'false');
+            })
+            .catch((error) => {
+            console.log(error);
+            });
+        } else {
+        // Increase like count and update like status
+        currentLikeCount++;
+        db.collection('dudutip')
+            .doc(docId)
+            .update({
+            like: currentLikeCount,
+            liked: true
+            })
+            .then(() => {
+            likeCountElement.text(currentLikeCount);
+            likeIconElement.addClass('filled');
+            $(this).data('liked', 'true');
+            })
+            .catch((error) => {
+            console.log(error);
+            });
+        }     
+    });
+
+    // Load comments for the current post
+    loadComments(postId);
+            
+        }
+    
+    });
+
+    $('.container').on('click', '.edit-post-button', function () {
+      const postId = $(this).closest('.webinfo').data('post-id'); // Get the post ID from the parent container
+      const newWindow = window.open('edit-post.html?id=' + postId, '_blank', 'width=600,height=600');
+      $(newWindow).on('beforeunload', function() {
+        location.reload();
+      });
+    })
+
+    // Add event listener to add comment button using event delegation
+    $('.container').on('click', '.add-comment-button', function () {
+        const commentInput = $(this).siblings('.comment-input');
+        const comment = commentInput.val().trim();
+
+        if (comment !== '') {
+        const postId = $(this).closest('.webinfo').data('post-id'); // Get the post ID from the parent container
+        const userId = localStorage.getItem('uid');
+
+        // Add the comment to Firestore subcollection
+        db.collection('dudutip').doc(postId).collection('comments').add({
+            comment: comment,
+            userId: userId,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+            .then(() => {
+            commentInput.val('');
+            loadComments(postId); // Refresh the comments after adding a new comment
+            })
+            .catch((error) => {
+            console.log(error);
+            });
+        }
+    });
+    });
+
+
+    $('#write-post-button').click(function() {
+      const newWindow = window.open('write-post.html', '_blank', 'width=600,height=600');
+
+      $(newWindow).on('beforeunload', function() {
+        location.reload();
+      });
+    });
+
+    $('#logout').click(function(){
+      firebase.auth().signOut()
+      localStorage.clear();
+      window.location.href="/index.html"
+    })
+
+    function navigateTo(url) {
+      window.location.href = url;
+    }
+
+  </script>
+
+  <script>
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        const userId = user.uid;
+
+        // Get the user document from the "user" collection
+        db.collection('user')
+          .doc(userId)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              const userData = doc.data();
+              // Check if the user has the admin role
+              const isAdmin = userData.role === 'admin';
+              // Toggle the visibility of the .admin-button based on admin status
+              const adminButton = document.querySelector('.admin-button');
+              if (adminButton) {
+                adminButton.style.display = isAdmin ? 'block' : 'none';
+              }
+              console.log(user);
+              console.log(user.displayName);
+              localStorage.setItem('user', JSON.stringify(user));
+              hideLoginElements();
+            } else {
+              // User document not found, treat as non-admin
+              console.log(user);
+              console.log(user.displayName);
+              localStorage.setItem('user', JSON.stringify(user));
+              hideLoginElements();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            // Error occurred, treat as non-admin
+            console.log(user);
+            console.log(user.displayName);
+            localStorage.setItem('user', JSON.stringify(user));
+            hideLoginElements();
+          });
+      } else {
+        // User not logged in, treat as non-admin
+        showLoginElements();
+      }
+    });
+
+
+      function hideLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').hide();
+        $('.navbar-nav .nav-link[href="/register.html"]').hide();
+        $('.navbar-nav .nav-link[id="logout"]').show();
+        var disName = localStorage.getItem('user')
+        $('#userName').html(JSON.parse(disName).displayName)
+      }
+
+      function showLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').show();
+        $('.navbar-nav .nav-link[href="/register.html"]').show();
+        $('.navbar-nav .nav-link[id="logout"]').hide();
+      }
+
+  </script>
+
+</body>
+</html>

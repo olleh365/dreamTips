@@ -1,0 +1,25 @@
+.game-container {
+    text-align: center;
+  }
+
+.board {
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+    border: 2px solid black;
+    position: relative;
+}
+
+.player {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.message {
+    margin-top: 20px;
+    font-weight: bold;
+}

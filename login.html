@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>꿈팁 로그인</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <link href="main.css" rel="stylesheet">
   <style>
     body {
-      background-color: lightblue;
+      background-color: #cecaff;
     }
   </style>
 
@@ -18,7 +18,7 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="/index.html">
-        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/tiplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
+        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/toplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
       </a>
       <span class="ms-auto mx-2" id="userName"></span>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -115,6 +115,35 @@
             window.location.href='/index.html'
         })
     })
+</script>
+
+<script>
+  firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+        console.log(user.displayName);
+        localStorage.setItem('user', JSON.stringify(user));
+        hideLoginElements();
+      } else {
+        showLoginElements();
+      }
+    });
+
+
+    function hideLoginElements() {
+      $('.navbar-nav .nav-link[href="/login.html"]').hide();
+      $('.navbar-nav .nav-link[href="/register.html"]').hide();
+      $('.navbar-nav .nav-link[id="logout"]').show();
+      var disName = localStorage.getItem('user')
+      $('#userName').html(JSON.parse(disName).displayName)
+    }
+
+    function showLoginElements() {
+      $('.navbar-nav .nav-link[href="/login.html"]').show();
+      $('.navbar-nav .nav-link[href="/register.html"]').show();
+      $('.navbar-nav .nav-link[id="logout"]').hide();
+    }
+
 </script>
 </body>
 </html>

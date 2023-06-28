@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>꿈팁 회원가입</title>
+  <title>Document</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <link href="main.css" rel="stylesheet">
   <style>
@@ -12,13 +12,12 @@
       background-color: #cecaff;
     }
   </style>
-
 </head>
 <body>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="/index.html">
-        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/toplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
+        <img src="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/tiplogo.png?alt=media" alt="Logo" class="navbar-logo"> 꿈팁
       </a>
       <span class="ms-auto mx-2" id="userName"></span>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -48,22 +47,18 @@
       </div>
     </div>
   </nav>
-      
-  <div class="container mt-3">
-    <div class="mb-3">
-      성명
-      <input type="text" class="form-control" placeholder="홍길동" id="name-new">
-    </div>
-    <div class="mb-3">
-      이메일주소
-      <input type="email" class="form-control" placeholder="email" id="email-new">
-    </div>
-    <div class="mb-3">
-      패스워드
-      <input type="password" class="form-control" placeholder="pw" id="pw-new">
-    </div>
-    <button type="submit" class="btn btn-primary" id="register">가입하기</button>
- </div>
+  
+
+  <div class="mainTwoBtn">
+    <button type="submit" class="btn btn-primary" id="newButton1">
+      <p>교육지원</p>
+      <p class="smaller-font">풍부한 교육, 꿈을 실현</p>
+    </button>
+    <button type="submit" class="btn btn-primary" id="newButton2">
+      <p>심리지원</p>
+      <p class="smaller-font">우리는 함께 치유합니다</p>
+    </button>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
@@ -86,73 +81,52 @@
     };
     firebase.initializeApp(firebaseConfig);
   </script>
-<script>
-    const db = firebase.firestore();
+
+  <script>
     const storage = firebase.storage();
+    const db = firebase.firestore();
 
-    // firebase.auth().onAuthStateChanged((user)=>{
-    //     if(user){
-    //         console.log(user)
-    //         console.log(user.displayName)
-    //         localStorage.setItem('user',JSON.stringify(user))
-    //     }
-    // })
-    $('#register').click(function() {
-      var 이메일 = $('#email-new').val();
-      var 패스워드 = $('#pw-new').val();
-      var 이름 = $('#name-new').val();
+      $('#newButton1').click(function(){
+          window.location.href="/edumain.html"
+      })
+      $('#newButton2').click(function(){
+          window.location.href="/psymain.html"
+      })
 
-      firebase.auth().createUserWithEmailAndPassword(이메일, 패스워드).then((result) => {
-        console.log(result);
-        const userUid = result.user.uid;
-        result.user.updateProfile({displayName: 이름}).then(() => {
-          localStorage.setItem('user', JSON.stringify(result.user));
-          db.collection('user').doc(userUid).set({
-            name: 이름,
-            role: 'member'
-          })
-          .then(() => {
-            window.location.href = '/index.html';
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        }).catch((error) => {
-          console.log(error);
-        });
-      }).catch((error) => {
-        console.log(error);
+      $('#logout').click(function(){
+          firebase.auth().signOut()
+          localStorage.clear();
+          window.location.href="/index.html"
+      })
+  </script>
+
+  <script>
+
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user);
+          console.log(user.displayName);
+          localStorage.setItem('user', JSON.stringify(user));
+          hideLoginElements();
+        } else {
+          showLoginElements();
+        }
       });
-    });
-</script>
 
-<script>
-  firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        console.log(user);
-        console.log(user.displayName);
-        localStorage.setItem('user', JSON.stringify(user));
-        hideLoginElements();
-      } else {
-        showLoginElements();
+      function hideLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').hide();
+        $('.navbar-nav .nav-link[href="/register.html"]').hide();
+        $('.navbar-nav .nav-link[id="logout"]').show();
+        var disName = localStorage.getItem('user')
+        $('#userName').html(JSON.parse(disName).displayName)
       }
-    });
 
+      function showLoginElements() {
+        $('.navbar-nav .nav-link[href="/login.html"]').show();
+        $('.navbar-nav .nav-link[href="/register.html"]').show();
+        $('.navbar-nav .nav-link[id="logout"]').hide();
+      }
+  </script>
 
-    function hideLoginElements() {
-      $('.navbar-nav .nav-link[href="/login.html"]').hide();
-      $('.navbar-nav .nav-link[href="/register.html"]').hide();
-      $('.navbar-nav .nav-link[id="logout"]').show();
-      var disName = localStorage.getItem('user')
-      $('#userName').html(JSON.parse(disName).displayName)
-    }
-
-    function showLoginElements() {
-      $('.navbar-nav .nav-link[href="/login.html"]').show();
-      $('.navbar-nav .nav-link[href="/register.html"]').show();
-      $('.navbar-nav .nav-link[id="logout"]').hide();
-    }
-
-</script>
 </body>
 </html>
