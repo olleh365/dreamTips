@@ -58,7 +58,7 @@
         <p class="float-end">?0</p>
         <div class="comment-container mt-3">
           <h5>Comments</h5>
-          <textarea class="comment-input" placeholder="코맨트"></textarea>
+          <textarea class="comment-input" placeholder="comment"></textarea>
           <button class="add-comment-button">Add Comment</button>
           <ul class="comment-list"></ul>
         </div>
@@ -109,16 +109,16 @@
         .doc(postId)
         .collection('comments')
         .orderBy('timestamp', 'asc')
-        .get()
-        .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
+        .onSnapshot((snapshot) => {
+          commentList.empty(); 
+
+          snapshot.forEach((doc) => {
             const commentData = doc.data();
             const commentItem = $('<li>').text(commentData.comment);
             commentList.append(commentItem);
-        });
-        })
-        .catch((error) => {
-        console.log(error);
+          });
+        }, (error) => {
+          console.log(error);
         });
     }
 
@@ -126,6 +126,7 @@
     result.forEach((doc) => {
         const category = doc.data().category;
         if(category === '텟트'){ const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : '';
+          const specificsText = doc.data().specifics ? doc.data().specifics.replace(/\\n/g, '<br>') : '';
 
         var template = `<div class="webinfo" data-post-id="${doc.id}">
         <div class="thumbnail" style="background-image: url('${doc.data().imageUrl}')"></div>
@@ -181,6 +182,7 @@
             })
             .catch((error) => {
             console.log(error);
+            alert('회원만 좋아요를 할 수 있습니다.');
             });
         } else {
         // Increase like count and update like status
@@ -198,6 +200,7 @@
             })
             .catch((error) => {
             console.log(error);
+            alert('회원만 좋아요를 할 수 있습니다.');
             });
         }     
     });
@@ -230,6 +233,7 @@
             })
             .catch((error) => {
             console.log(error);
+            alert('회원만 코멘트를 남길 수 있습니다.');
             });
         }
     });

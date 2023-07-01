@@ -49,21 +49,6 @@
 
   </p>
   <div class="container mt-3">
-    <!-- <div class="webinfo">
-      <div class="thumbnail" style="background-image: url('https://via.placeholder.com/350')"></div>
-      <div class="flex-grow-1 p-4">
-        <h5 class="title">테스트</h5>
-        <p class="price">무료</p>
-        <p class="inspecTime">10분</p>
-        <p class="float-end">?0</p>
-        <div class="comment-container mt-3">
-          <h5>Comments</h5>
-          <textarea class="comment-input" placeholder="코맨트"></textarea>
-          <button class="add-comment-button">Add Comment</button>
-          <ul class="comment-list"></ul>
-        </div>
-      </div>
-    </div> -->
   </div>
   <button id="write-post-button" class="admin-button">글쓰기</button>
 
@@ -109,106 +94,115 @@
         .doc(postId)
         .collection('comments')
         .orderBy('timestamp', 'asc')
-        .get()
-        .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
+        .onSnapshot((snapshot) => {
+          commentList.empty(); 
+
+          snapshot.forEach((doc) => {
             const commentData = doc.data();
             const commentItem = $('<li>').text(commentData.comment);
             commentList.append(commentItem);
-        });
-        })
-        .catch((error) => {
-        console.log(error);
+          });
+        }, (error) => {
+          console.log(error);
         });
     }
 
-    db.collection('dudutip').get().then((result) => {
-    result.forEach((doc) => {
-        const category = doc.data().category;
-        if(category === '학사경고'){ const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : '';
+    db.collection('dudutip')
+      .where('category', '==', '학사경고')
+      .onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          const doc = change.doc;
 
-        var template = `<div class="webinfo" data-post-id="${doc.id}">
-        <div class="thumbnail" style="background-image: url('${doc.data().imageUrl}')"></div>
-        <div class="flex-grow-1 p-4">
-          <h5 class="title"><a href="${doc.data().link}" class="title-link">${doc.data().webTitle} </a></h5>
-            <br>
-            <p class="detail"><strong>설명 : </strong>${detailText}</p>
-            <p class="detail"><strong>지원기간 : </strong>${doc.data().period}</p>
-            <p class="detail"><strong>특이사항 : </strong>${doc.data().specifics}</p>
-            <p class="float-end">
-            <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
-            <span class="like-count">${doc.data().like}</span>
-            </p>
-            <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
-            좋아요
-            </button>
-            <p></p>
-            <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
-            <div class="comment-container mt-3">
-            <h5>코맨트</h5>
-            <ul class="comment-list"></ul>
-            <textarea class="comment-input" placeholder="댓글 내용을 입력하시오"></textarea>
-            <button class="add-comment-button">저장</button>
-            <button class="edit-post-button">게시글 수정</button>
+          if (change.type === 'added') {
+            const category = doc.data().category;
+            if (category === '학사경고') {
+              const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : '';
+              const specificsText = doc.data().specifics ? doc.data().specifics.replace(/\\n/g, '<br>') : '';
 
-            </div>
-        </div>
-        </div>`;
+          var template = `<div class="webinfo" data-post-id="${doc.id}">
+          <div class="thumbnail" style="background-image: url('${doc.data().imageUrl}')"></div>
+          <div class="flex-grow-1 p-4">
+              <h5 class="title"><a href="${doc.data().link}" class="title-link">${doc.data().webTitle} </a></h5>
+              <br>
+              <p class="detail"><strong>설명 : </strong>${detailText}</p>
+              <p class="detail"><strong>지원기간 : </strong>${doc.data().period}</p>
+              <p class="detail"><strong>특이사항 : </strong>${specificsText}</p>
+              <p class="float-end">
+              <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
+              <span class="like-count">${doc.data().like}</span>
+              </p>
+              <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
+              좋아요
+              </button>
+              <p></p>
+              <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
+              <div class="comment-container mt-3">
+              <h5>댓글</h5>
+              <textarea class="comment-input" placeholder="댓글 내용을 입력하시오"></textarea>
+              <button class="add-comment-button">저장</button>
+              <button class="edit-post-button">게시글 수정</button>
+              <ul class="comment-list"></ul>
+              </div>
+          </div>
+          </div>`;
 
-    $('.container').append(template);
+      $('.container').append(template);
 
-    const postId = doc.id;
+      const postId = doc.id;
 
-    // Add event listener to like button
-    $(`.like-button[data-doc-id="${postId}"]`).click(function () {
-    const docId = $(this).data('doc-id');
-        const likeCountElement = $(this).siblings('.float-end').find('.like-count');
-        const likeIconElement = $(this).siblings('.float-end').find('.like-icon');
-        let currentLikeCount = parseInt(likeCountElement.text());
-        let liked = $(this).data('liked') === 'true';
+      // Add event listener to like button
+      $(`.like-button[data-doc-id="${postId}"]`).click(function () {
+      const docId = $(this).data('doc-id');
+          const likeCountElement = $(this).siblings('.float-end').find('.like-count');
+          const likeIconElement = $(this).siblings('.float-end').find('.like-icon');
+          let currentLikeCount = parseInt(likeCountElement.text());
+          let liked = $(this).data('liked') === 'true';
 
-        if (liked) {
-        // Decrease like count and update like status
-        currentLikeCount--;
-        db.collection('dudutip')
-            .doc(docId)
-            .update({
-            like: currentLikeCount,
-            liked: false
-            })
-            .then(() => {
-            likeCountElement.text(currentLikeCount);
-            likeIconElement.removeClass('filled');
-            $(this).data('liked', 'false');
-            })
-            .catch((error) => {
-            console.log(error);
-            });
-        } else {
-        // Increase like count and update like status
-        currentLikeCount++;
-        db.collection('dudutip')
-            .doc(docId)
-            .update({
-            like: currentLikeCount,
-            liked: true
-            })
-            .then(() => {
-            likeCountElement.text(currentLikeCount);
-            likeIconElement.addClass('filled');
-            $(this).data('liked', 'true');
-            })
-            .catch((error) => {
-            console.log(error);
-            });
-        }     
-    });
+          if (liked) {
+          // Decrease like count and update like status
+          currentLikeCount--;
+          db.collection('dudutip')
+              .doc(docId)
+              .update({
+              like: currentLikeCount,
+              liked: false
+              })
+              .then(() => {
+              likeCountElement.text(currentLikeCount);
+              likeIconElement.removeClass('filled');
+              $(this).data('liked', 'false');
+              })
+              .catch((error) => {
+              console.log(error);
+              alert('회원만 좋아요를 할 수 있습니다.');
+              });
+          } else {
+          // Increase like count and update like status
+          currentLikeCount++;
+          db.collection('dudutip')
+              .doc(docId)
+              .update({
+              like: currentLikeCount,
+              liked: true
+              })
+              .then(() => {
+              likeCountElement.text(currentLikeCount);
+              likeIconElement.addClass('filled');
+              $(this).data('liked', 'true');
+              })
+              .catch((error) => {
+              console.log(error);
+              alert('회원만 좋아요를 할 수 있습니다.');
+              });
+          }     
+      });
 
-    // Load comments for the current post
-    loadComments(postId);
-            
-        }
-    
+      // Load comments for the current post
+      loadComments(postId);
+              
+          }
+      
+      }
     });
 
     $('.container').on('click', '.edit-post-button', function () {
@@ -240,6 +234,7 @@
             })
             .catch((error) => {
             console.log(error);
+            alert('회원만 코멘트를 남길 수 있습니다.');
             });
         }
     });
@@ -285,6 +280,12 @@
               if (adminButton) {
                 adminButton.style.display = isAdmin ? 'block' : 'none';
               }
+
+              const editPostButtons = document.querySelectorAll('.edit-post-button');
+              editPostButtons.forEach((button) => {
+                button.style.display = isAdmin ? 'block' : 'none';
+              });
+
               console.log(user);
               console.log(user.displayName);
               localStorage.setItem('user', JSON.stringify(user));

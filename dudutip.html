@@ -58,7 +58,7 @@
         <p class="float-end">?0</p>
         <div class="comment-container mt-3">
           <h5>Comments</h5>
-          <textarea class="comment-input" placeholder="코맨트"></textarea>
+          <textarea class="comment-input" placeholder="comment"></textarea>
           <button class="add-comment-button">Add Comment</button>
           <ul class="comment-list"></ul>
         </div>
@@ -125,6 +125,7 @@ function loadComments(postId) {
 db.collection('dudutip').get().then((result) => {
   result.forEach((doc) => {
     const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : '';
+          const specificsText = doc.data().specifics ? doc.data().specifics.replace(/\\n/g, '<br>') : '';
 
     var template = `<div class="webinfo" data-post-id="${doc.id}">
       <div class="thumbnail" style="background-image: url('${doc.data().imageUrl}')"></div>

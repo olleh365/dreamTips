@@ -1,3 +1,14 @@
+@media (max-width: 767px) {
+  body div.container.mt-3 div.webinfo div.thumbnail {
+    margin-right: 100%;
+  }
+}
+
+
+.edit-post-button {
+  display: none;
+}
+
 .admin-button {
   display: none;
 }

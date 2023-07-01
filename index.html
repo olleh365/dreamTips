@@ -79,7 +79,7 @@ body {
     .logo {
       width: 140px;
       height: 140px;
-      margin-bottom: 50px;
+      margin-bottom: 20px;
     }
     .logo-container-main {
       display: flex;
@@ -107,6 +107,103 @@ body {
   .box:nth-child(2) {
     font-size: 32px;
   }
+
+/* Styles for screens smaller than 768px */
+@media (max-width: 767px) {
+  .container {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+  }
+
+  .box {
+    width: 100%;
+    height: auto;
+    margin: 10px 0;
+    max-height: 200px; /* Adjust the maximum height as needed */
+  }
+
+  .box .categories {
+    display: none;
+    overflow: auto;
+  }
+
+  .box:hover .categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo-container-main {
+    margin-bottom: 10px;
+  }
+
+  .logo-main {
+    width: 100%;
+    height: auto;
+    position: static;
+    transform: none;
+  }
+}
+
+/* Styles for screens between 768px and 991px */
+@media (min-width: 768px) and (max-width: 991px) {
+  .container {
+    flex-wrap: wrap;
+  }
+
+  .box {
+    width: calc(50% - 20px);
+    margin: 10px;
+    overflow: auto;
+    max-height: 200px; /* Adjust the maximum height as needed */
+  }
+
+  .box .categories {
+    display: none;
+    overflow: auto;
+  }
+
+  .box:hover .categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* Styles for screens larger than 992px */
+@media (min-width: 992px) {
+  .container {
+    justify-content: flex-start;
+  }
+
+  .box {
+    width: 300px;
+    height: 400px;
+    margin: 10px;
+    overflow: auto;
+    max-height: 350px; /* Adjust the maximum height as needed */
+  }
+
+  .box .categories {
+    display: none;
+    overflow: auto;
+
+  }
+
+  .box:hover .categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+
+
+
   </style>
 
 </head>

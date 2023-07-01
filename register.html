@@ -51,8 +51,8 @@
       
   <div class="container mt-3">
     <div class="mb-3">
-      성명
-      <input type="text" class="form-control" placeholder="홍길동" id="name-new">
+      닉네임
+      <input type="text" class="form-control" placeholder="NickName" id="name-new">
     </div>
     <div class="mb-3">
       이메일주소
@@ -90,13 +90,6 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // firebase.auth().onAuthStateChanged((user)=>{
-    //     if(user){
-    //         console.log(user)
-    //         console.log(user.displayName)
-    //         localStorage.setItem('user',JSON.stringify(user))
-    //     }
-    // })
     $('#register').click(function() {
       var 이메일 = $('#email-new').val();
       var 패스워드 = $('#pw-new').val();
@@ -122,8 +115,16 @@
         });
       }).catch((error) => {
         console.log(error);
+        alert('빈칸 없이 올바른 정보를 입력해 주세요')
       });
     });
+
+    $(document).keypress(function(event) {
+      if (event.keyCode === 13) { 
+        $('#register').click(); 
+      }
+    });
+    
 </script>
 
 <script>
