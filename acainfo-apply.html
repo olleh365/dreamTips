@@ -9,6 +9,17 @@
   <link href="main.css" rel="stylesheet">
   <link rel="shortcut icon" href="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/favicon.ico?alt=media" type="image/x-icon">
   <link rel="icon" href="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/favicon.ico?alt=media" type="image/x-icon">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E32P7B4Z5Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-E32P7B4Z5Y');
+  </script>
+
+  
 </head>
 
 <body>
@@ -93,7 +104,7 @@
         .doc(postId)
         .collection('comments')
         .orderBy('timestamp', 'asc')
-        .onSnapshot((snapshot) => {
+      .onSnapshot((snapshot) => {
           commentList.empty(); 
 
           snapshot.forEach((doc) => {
@@ -108,6 +119,7 @@
 
     db.collection('dudutip')
       .where('category', '==', '수강신청')
+      .orderBy('like','desc')
       .onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const doc = change.doc;
@@ -118,148 +130,91 @@
               const detailText = doc.data().detail ? doc.data().detail.replace(/\\n/g, '<br>') : '';
               const specificsText = doc.data().specifics ? doc.data().specifics.replace(/\\n/g, '<br>') : '';
 
-          var template = `<div class="webinfo" data-post-id="${doc.id}">
-          <div class="thumbnail" style="background-image: url('${doc.data().imageUrl}')"></div>
-          <div class="flex-grow-1 p-4">
-              <h5 class="title"><a href="${doc.data().link}" class="title-link">${doc.data().webTitle} </a></h5>
-              <br>
-              <p class="detail"><strong>설명 : </strong>${detailText}</p>
-              <p class="detail"><strong>지원기간 : </strong>${doc.data().period}</p>
-              <p class="detail"><strong>특이사항 : </strong>${specificsText}</p>
-              <p class="float-end">
-              <span class="like-icon ${doc.data().liked ? 'filled' : ''}"></span>
-              <span class="like-count">${doc.data().like}</span>
-              </p>
-              <button class="like-button" data-doc-id="${doc.id}" data-liked="${doc.data().liked ? 'true' : 'false'}">
-              좋아요
-              </button>
-              <p></p>
-              <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
-              <div class="comment-container mt-3">
-              <h5>댓글</h5>
-              <textarea class="comment-input" placeholder="댓글 내용을 입력하시오"></textarea>
-              <button class="add-comment-button">저장</button>
-              <button class="edit-post-button">게시글 수정</button>
-              <ul class="comment-list"></ul>
-              </div>
-          </div>
-          </div>`;
+              var template = `<div class="webinfo" data-post-id="${doc.id}">
+                <div class="thumbnail" style="background-image: url('${doc.data().imageUrl}')"></div>
+                <div class="flex-grow-1 p-4">
+                    <h5 class="title"><a href="${doc.data().link}" class="title-link">${doc.data().webTitle} </a></h5>
+                    <br>
+                    <p class="detail"><strong>설명 : </strong>${detailText}</p>
+                    <p class="detail"><strong>특이사항 : </strong>${specificsText}</p>
+                    <p class="float-end">
+                    <span class="like-icon ${doc.data().liked ? 'filled' : ''}" data-doc-id="${doc.id}"></span>
+                    <span class="like-count">${doc.data().like}</span>
+                    </p>
+                    <p></p>
+                    <a class="link-button" href="${doc.data().link}" target="_blank">웹사이트로 이동</a>
+                    <div class="comment-container mt-3">
+                    <h5>댓글</h5>
+                    <textarea class="comment-input" placeholder="댓글 내용을 입력하시오"></textarea>
+                    <button class="add-comment-button">저장</button>
+                    <button class="edit-post-button">게시글 수정</button>
+                    <ul class="comment-list"></ul>
+                    </div>
+                </div>
+              </div>`;
 
-      $('.container').append(template);
+              $('.container').append(template);
 
-      const postId = doc.id;
+              const postId = doc.id;
 
-<<<<<<< Updated upstream
-      // Add event listener to like button
-      $(`.like-button[data-doc-id="${postId}"]`).click(function () {
-      const docId = $(this).data('doc-id');
-          const likeCountElement = $(this).siblings('.float-end').find('.like-count');
-          const likeIconElement = $(this).siblings('.float-end').find('.like-icon');
-          let currentLikeCount = parseInt(likeCountElement.text());
-          let liked = $(this).data('liked') === 'true';
-
-          if (liked) {
-          // Decrease like count and update like status
-          currentLikeCount--;
-          db.collection('dudutip')
-              .doc(docId)
-              .update({
-              like: currentLikeCount,
-              liked: false
-              })
-              .then(() => {
-              likeCountElement.text(currentLikeCount);
-              likeIconElement.removeClass('filled');
-              $(this).data('liked', 'false');
-              })
-              .catch((error) => {
-              console.log(error);
-              alert('회원만 좋아요를 할 수 있습니다.');
-=======
               $(`.like-icon[data-doc-id="${postId}"]`).click(function () {
                 const docId = $(this).data('doc-id');
                 const likeCountElement = $(this).siblings('.like-count');
                 let currentLikeCount = parseInt(likeCountElement.text());
                 const isLiked = $(this).hasClass('filled');
 
-                if (isLiked) {
-                  currentLikeCount--;
-                  db.collection('dudutip')
-                    .doc(docId)
-                    .update({
-                      like: currentLikeCount,
-                      liked: false
-                    })
-                    .then(() => {
-                      likeCountElement.text(currentLikeCount);
-                      $(this).removeClass('filled');
+                db.runTransaction((transaction) => {
+                  const postRef = db.collection('dudutip').doc(docId);
 
-                      const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
-                      const index = likedPosts.indexOf(docId);
-                      if (index > -1) {
-                        likedPosts.splice(index, 1);
-                        localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+                  return transaction.get(postRef).then((doc) => {
+                    if (doc.exists) {
+                      const post = doc.data();
+                      const likedByUser = post.likedByUser || [];
+
+                      if (isLiked) {
+                        currentLikeCount--;
+                        const index = likedByUser.indexOf(userId);
+                        if (index > -1) {
+                          likedByUser.splice(index, 1);
+                        }
+                      } else {
+                        currentLikeCount++;
+                        likedByUser.push(userId);
                       }
-                    })
-                    .catch((error) => {
-                      
-                      
-                    });
-                } else {
-                  currentLikeCount++;
-                  db.collection('dudutip')
-                    .doc(docId)
-                    .update({
-                      like: currentLikeCount,
-                      liked: true
-                    })
-                    .then(() => {
-                      likeCountElement.text(currentLikeCount);
-                      $(this).addClass('filled');
 
-                      const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
-                      likedPosts.push(docId);
-                      localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
-                    })
-                    .catch((error) => {
-                      
-                      
-                    });
-                }
->>>>>>> Stashed changes
-              });
-          } else {
-          // Increase like count and update like status
-          currentLikeCount++;
-          db.collection('dudutip')
-              .doc(docId)
-              .update({
-              like: currentLikeCount,
-              liked: true
-              })
-              .then(() => {
-              likeCountElement.text(currentLikeCount);
-              likeIconElement.addClass('filled');
-              $(this).data('liked', 'true');
-              })
-              .catch((error) => {
-              console.log(error);
-              alert('회원만 좋아요를 할 수 있습니다.');
-              });
-          }     
-      });
+                      transaction.update(postRef, {
+                        like: currentLikeCount,
+                        likedByUser: likedByUser
+                      });
 
-<<<<<<< Updated upstream
-      // Load comments for the current post
-      loadComments(postId);
-              
-=======
+                      return currentLikeCount;
+                    } else {
+                      throw new Error('Post does not exist');
+                    }
+                  });
+                })
+                .then((updatedLikeCount) => {
+                  likeCountElement.text(updatedLikeCount);
+
+                  if (isLiked) {
+                    $(this).removeClass('filled');
+                  } else {
+                    $(this).addClass('filled');
+                  }
+                })
+                .catch((error) => {
+                });
+              });
+
               loadComments(postId);
             }
->>>>>>> Stashed changes
           }
-      
-      }
+        });
+
+    const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
+    likedPosts.forEach((postId) => {
+      const likeIconElement = $(`.like-icon[data-doc-id="${postId}"]`);
+      likeIconElement.addClass('filled');
     });
 
     $('.container').on('click', '.edit-post-button', function () {
@@ -317,6 +272,9 @@
   </script>
 
   <script>
+    const auth = firebase.auth();
+    let userId = null;
+
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         const userId = user.uid;
@@ -338,7 +296,6 @@
                 button.style.display = isAdmin ? 'block' : 'none';
               });
 
-
               
               
               localStorage.setItem('user', JSON.stringify(user));
@@ -358,6 +315,7 @@
             hideLoginElements();
           });
       } else {
+        userId = null;
         showLoginElements();
       }
     });
