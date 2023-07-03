@@ -92,15 +92,17 @@
 
     
 
-    // Function to load comments for a specific post
     function loadComments(postId) {
     const commentList = $(`.webinfo[data-post-id="${postId}"] .comment-list`);
 
-    // Clear existing comments
     commentList.empty();
 
+<<<<<<< Updated upstream
     // Retrieve comments from Firestore subcollection
     db.collection('dudutip')
+=======
+       db.collection('dudutip')
+>>>>>>> Stashed changes
         .doc(postId)
         .collection('comments')
         .orderBy('timestamp', 'asc')
@@ -113,7 +115,6 @@
             commentList.append(commentItem);
           });
         }, (error) => {
-          console.log(error);
         });
     }
 
@@ -157,16 +158,24 @@
 
       const postId = doc.id;
 
+<<<<<<< Updated upstream
       // Add event listener to like button
       $(`.like-button[data-doc-id="${postId}"]`).click(function () {
+=======
+              $(`.like-icon[data-doc-id="${postId}"]`).click(function () {
+>>>>>>> Stashed changes
                 const docId = $(this).data('doc-id');
                 const likeCountElement = $(this).siblings('.float-end').find('.like-count');
                 const likeIconElement = $(this).siblings('.float-end').find('.like-icon');
                 let currentLikeCount = parseInt(likeCountElement.text());
                 let liked = $(this).data('liked') === 'true';
 
+<<<<<<< Updated upstream
                 if (liked) {
                   // Decrease like count and update like status
+=======
+                if (isLiked) {
+>>>>>>> Stashed changes
                   currentLikeCount--;
                   db.collection('dudutip')
                     .doc(docId)
@@ -179,7 +188,6 @@
                       likeIconElement.removeClass('filled');
                       $(this).data('liked', 'false');
 
-                      // Remove post ID from local storage
                       const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
                       const index = likedPosts.indexOf(docId);
                       if (index > -1) {
@@ -188,11 +196,8 @@
                       }
                     })
                     .catch((error) => {
-                      console.log(error);
-                      alert('회원만 좋아요를 할 수 있습니다.');
                     });
                 } else {
-                  // Increase like count and update like status
                   currentLikeCount++;
                   db.collection('dudutip')
                     .doc(docId)
@@ -205,21 +210,23 @@
                       likeIconElement.addClass('filled');
                       $(this).data('liked', 'true');
 
-                      // Add post ID to local storage
                       const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
                       likedPosts.push(docId);
                       localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
                     })
                     .catch((error) => {
-                      console.log(error);
-                      alert('회원만 좋아요를 할 수 있습니다.');
                     });
                 }
               });
 
+<<<<<<< Updated upstream
       // Load comments for the current post
       loadComments(postId);
               
+=======
+              loadComments(postId);
+            }
+>>>>>>> Stashed changes
           }
       
       }
@@ -235,23 +242,21 @@ likedPosts.forEach((postId) => {
 
     $('.container').on('click', '.edit-post-button', function () {
 
-      const postId = $(this).closest('.webinfo').data('post-id'); // Get the post ID from the parent container
+      const postId = $(this).closest('.webinfo').data('post-id'); 
       const newWindow = window.open('edit-post.html?id=' + postId, '_blank', 'width=600,height=600');
       $(newWindow).on('beforeunload', function() {
         location.reload();
       });
     })
 
-    // Add event listener to add comment button using event delegation
     $('.container').on('click', '.add-comment-button', function () {
         const commentInput = $(this).siblings('.comment-input');
         const comment = commentInput.val().trim();
 
         if (comment !== '') {
-        const postId = $(this).closest('.webinfo').data('post-id'); // Get the post ID from the parent container
+        const postId = $(this).closest('.webinfo').data('post-id'); 
         const userId = localStorage.getItem('uid');
 
-        // Add the comment to Firestore subcollection
         db.collection('dudutip').doc(postId).collection('comments').add({
             comment: comment,
             userId: userId,
@@ -259,10 +264,9 @@ likedPosts.forEach((postId) => {
         })
             .then(() => {
             commentInput.val('');
-            loadComments(postId); // Refresh the comments after adding a new comment
+            loadComments(postId); 
             })
             .catch((error) => {
-            console.log(error);
             alert('회원만 코멘트를 남길 수 있습니다.');
             });
         }
@@ -298,16 +302,13 @@ likedPosts.forEach((postId) => {
       if (user) {
         const userId = user.uid;
 
-        // Get the user document from the "user" collection
         db.collection('user')
           .doc(userId)
           .get()
           .then((doc) => {
             if (doc.exists) {
               const userData = doc.data();
-              // Check if the user has the admin role
               const isAdmin = userData.role === 'admin';
-              // Toggle the visibility of the .admin-button based on admin status
               const adminButton = document.querySelector('.admin-button');
               if (adminButton) {
                 adminButton.style.display = isAdmin ? 'block' : 'none';
@@ -318,28 +319,19 @@ likedPosts.forEach((postId) => {
                 button.style.display = isAdmin ? 'block' : 'none';
               });
 
-              console.log(user);
-              console.log(user.displayName);
+
               localStorage.setItem('user', JSON.stringify(user));
               hideLoginElements();
             } else {
-              // User document not found, treat as non-admin
-              console.log(user);
-              console.log(user.displayName);
               localStorage.setItem('user', JSON.stringify(user));
               hideLoginElements();
             }
           })
           .catch((error) => {
-            console.log(error);
-            // Error occurred, treat as non-admin
-            console.log(user);
-            console.log(user.displayName);
             localStorage.setItem('user', JSON.stringify(user));
             hideLoginElements();
           });
       } else {
-        // User not logged in, treat as non-admin
         showLoginElements();
       }
     });

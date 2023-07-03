@@ -71,7 +71,6 @@
 
             var file = document.querySelector('#image').files[0];
             if (!file) {
-              // File not selected, display an error notification
               alert('이미지 파일을 아무거나라도 꼭 넣어주세요!');
               return;
             }
@@ -84,21 +83,16 @@
               'state_changed',
               null,
               function(error) {
-                // Handle upload error
-                console.log(error);
                 alert('이미지 업로드에 실패했습니다 다시 시도해주십시오.');
               },
               function() {
-                // Get the download URL after successful upload
                 uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                  // Get the form values
                   const title = $('#title').val().trim();
                   const category = $('#category').val().trim();
                   const link = $('#link').val().trim();
                   const detailItem = $('#detailItem').val().trim();
                   const specificsItem = $('#specificsItem').val().trim();
 
-                  // Save the post in the 'dudutip' collection
                   db.collection('dudutip')
                     .add({
                       webTitle: title,
@@ -109,18 +103,14 @@
                       specifics: specificsItem,
                       likeCount: 0,
                       like: 0,
-                      imageUrl: downloadURL // Add the download URL to the post data
+                      imageUrl: downloadURL 
                     })
                     .then(() => {
-                      // Display success message
                       alert('저장되었습니다');
-                      // Reset the form
                       $('#post-form')[0].reset();
                       window.close();
                     })
                     .catch((error) => {
-                      console.log(error);
-                      // Display error message
                       alert('오류입니다.');
                     });
                 });

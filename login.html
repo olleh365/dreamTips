@@ -90,8 +90,6 @@
 
     firebase.auth().onAuthStateChanged((user)=>{
         if(user){
-            console.log(user)
-            console.log(user.displayName)
             localStorage.setItem('user',JSON.stringify(user));
             hideLoginElements();
         }
@@ -113,7 +111,6 @@
 
         firebase.auth().signInWithEmailAndPassword(이메일, 패스워드).then((result)=>{
 
-            console.log(result.user)
 
             window.location.href='/index.html'
         })
@@ -134,8 +131,8 @@
 <script>
   firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
-        console.log(user.displayName);
+        
+        
         localStorage.setItem('user', JSON.stringify(user));
         hideLoginElements();
       } else {

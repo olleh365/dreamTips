@@ -98,7 +98,6 @@
       var 이름 = $('#name-new').val();
 
       firebase.auth().createUserWithEmailAndPassword(이메일, 패스워드).then((result) => {
-        console.log(result);
         const userUid = result.user.uid;
         result.user.updateProfile({displayName: 이름}).then(() => {
           localStorage.setItem('user', JSON.stringify(result.user));
@@ -110,13 +109,13 @@
             window.location.href = '/index.html';
           })
           .catch((error) => {
-            console.log(error);
+            
           });
         }).catch((error) => {
-          console.log(error);
+          
         });
       }).catch((error) => {
-        console.log(error);
+        
         alert('빈칸 없이 올바른 정보를 입력해 주세요')
       });
     });
@@ -132,8 +131,8 @@
 <script>
   firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
-        console.log(user.displayName);
+        
+        
         localStorage.setItem('user', JSON.stringify(user));
         hideLoginElements();
       } else {
