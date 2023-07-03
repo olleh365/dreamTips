@@ -15,12 +15,34 @@
   position: relative;
 }
 
-.map-icon {
-  position: absolute;
-  font-size: 20px;
-  color: #ffffff;
+.custom-image {
+  max-width: 400px;
+  max-height: 200px;
 }
 
+.map-icon {
+  position: absolute;
+  width: 45px; 
+  height: 45px; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+.map-icon img {
+  max-width: 150%;
+  max-height: 150%;
+}
+
+#tooltip {
+  position: absolute;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  font-size: 14px;
+  visibility: hidden;
+  z-index: 1;
+}
   </style>
 </head>
 
@@ -62,7 +84,7 @@
   <h1 class="mx-3 mainTitle">교내 지도</h1>
 
   <div id="map"></div>
-
+  <div id="tooltip"></div>
 
 
   <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
@@ -91,50 +113,121 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    
     var locations = [
-        { name: 'Location 1', icon: 'icon-1.png', x: 100, y: 100 },
-        { name: 'Location 2', icon: 'icon-2.png', x: 200, y: 300 },
-        { name: 'Location 3', icon: 'icon-3.png', x: 400, y: 200 }
-        ];
-
-        // Function to create map icons
-        function createIcon(location) {
-        var icon = document.createElement('div');
-        icon.className = 'map-icon';
-        icon.style.left = location.x + 'px';
-        icon.style.top = location.y + 'px';
-        icon.innerHTML = '<img src="' + location.icon + '" alt="' + location.name + '">';
-        return icon;
-        }
-
-        // Add icons to the map
-        var mapContainer = document.getElementById('map');
-        locations.forEach(function(location) {
-        var icon = createIcon(location);
-        mapContainer.appendChild(icon);
-        });
-
-        // Get the map image from Firebase Storage and set it as the background
-        var mapImageRef = storage.ref().child('dumap.jpeg');
-        mapImageRef.getDownloadURL().then(function(url) {
-        mapContainer.style.backgroundImage = 'url(' + url + ')';
-        }).catch(function(error) {
-        console.log(error);
-        });
+      { id: 'nCwe3HjZ0CGXSieH41K4', name: 'Location 1', icon: 'bookIcon.png', x: 492, y: 480 },
+      { id: '1KuC5IDqoO0JgkSi87hU', name: 'Location 2', icon: 'printIconLeft.png', x: 373, y: 420 },
+      { id: '8nWZ201ARvysykFudUgP', name: 'Location 3', icon: 'marIconUnder.png', x: 413, y: 450 },
+      { id: 'LXMOVY0hR5ilDE9gc4pz', name: 'Location 4', icon: 'hosIcon.png', x: 410, y: 340 },
+      { id: 'xoenj0WYNk5neCSLHq9b', name: 'Location 5', icon: 'eatIconRight.png', x: 450, y: 420 },
+      { id: 'Ox9VagcOipG2yY9syEPC', name: 'Location 6', icon: 'marIcon.png', x: 694, y: 491 },
+      { id: 'gWqeQ85XkR2s9Ktg238H', name: 'Location 7', icon: 'eatIconRight.png', x: 730, y: 542 },
+      { id: 'IKpavRGSYjzB64bF5kGx', name: 'Location 8', icon: 'printIconLeft.png', x: 640, y: 542 },
+      { id: 'i8hKoZtiLsQr4V9dK1j6', name: 'Location 9', icon: 'printIcon.png', x: 321, y: 221 },
+      { id: 'kEehMjyKYGC2VhlreajY', name: 'Location 10', icon: 'eatIconRight.png', x: 361, y: 260 },
+      { id: 'dksgbk4BThqYBo9ChmBM', name: 'Location 11', icon: 'printIcon.png', x: 520, y: 350 },
+      { id: 'OmAs6NT89qLgsOGUk8eZ', name: 'Location 12', icon: 'healthIcon.png', x: 520, y: 231 }
+    ];
 
 
-
-
-    $('#logout').click(function(){
-      firebase.auth().signOut()
-      localStorage.clear();
-      window.location.href="/index.html"
-    })
-
-    function navigateTo(url) {
-      window.location.href = url;
+    function getDownloadURL(filename) {
+      return storage.ref().child(filename).getDownloadURL();
     }
+
+    // Add icons to the map
+    var mapContainer = document.getElementById('map');
+    locations.forEach(function(location) {
+      var icon = createIcon(location);
+      mapContainer.appendChild(icon);
+    });
+
+    // Get the map image from Firebase Storage and set it as the background
+    var mapImageRef = storage.ref().child('dumap.jpeg');
+    mapImageRef.getDownloadURL().then(function(url) {
+      mapContainer.style.backgroundImage = 'url(' + url + ')';
+    }).catch(function(error) {
+      console.log(error);
+    });
+
+    // Function to create map icons
+    function createIcon(location) {
+      var iconElement = document.createElement('div');
+      iconElement.className = 'map-icon';
+      iconElement.style.top = location.y + 'px';
+      iconElement.style.left = location.x + 'px';
+
+      // Generate download URL for the icon image
+      if (location.icon) {
+        getDownloadURL('iconImage/' + location.icon).then(function(url) {
+          var iconImage = document.createElement('img');
+          iconImage.src = url;
+          iconImage.alt = location.name;
+          iconImage.className = 'icon-image'; // Add a class for styling purposes
+          iconElement.appendChild(iconImage);
+        }).catch(function(error) {
+          console.log(error);
+        });
+      }
+
+      // Add mouseover event listener with the event parameter
+      iconElement.addEventListener('mouseover', function(event) {
+        showTooltip(location, event);
+      });
+
+      // Add mouseout event listener
+      iconElement.addEventListener('mouseout', function() {
+        hideTooltip();
+      });
+
+      return iconElement;
+    }
+
+    // Show tooltip with location data
+    function showTooltip(location, event) {
+    var tooltip = document.getElementById('tooltip');
+
+    // Retrieve data from Firestore using the document ID
+    db.collection('dudumap')
+      .doc(location.id)
+      .get()
+      .then(function(doc) {
+        if (doc.exists) {
+          var data = doc.data();
+          // Replace the tooltip content with the building name, location name, and description fields
+          tooltip.innerHTML =
+            '<div class="tooltip-content">' +
+            '<div class="tooltip-image">' +
+            '<img src="' + data.imageUrl + '" alt="' + data.buildingName + '" class="custom-image">' +
+            '</div>' +
+            '<h3>' +
+            data.buildingName +
+            '</h3>' +
+            '<p>위치: ' +
+            data.locationName +
+            '</p>' +
+            '<p>상세: ' +
+            data.detail +
+            '</p>' +
+            '</div>';
+
+          // Position the tooltip at the mouse position
+          tooltip.style.left = event.pageX + 'px';
+          tooltip.style.top = event.pageY + 'px';
+
+          tooltip.style.visibility = 'visible';
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  }
+
+    // Hide tooltip
+    function hideTooltip() {
+      var tooltip = document.getElementById('tooltip');
+      tooltip.style.visibility = 'hidden';
+    }
+
+
 
   </script>
 
