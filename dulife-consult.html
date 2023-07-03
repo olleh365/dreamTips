@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>꿈팁 상담 팁</title>
+  <title>꿈팁 교내지도 팁</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   <link href="main.css" rel="stylesheet">
+  <link rel="shortcut icon" href="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/favicon.ico?alt=media" type="image/x-icon">
+  <link rel="icon" href="https://firebasestorage.googleapis.com/v0/b/dreamtips-cdc45.appspot.com/o/favicon.ico?alt=media" type="image/x-icon">
 </head>
 
 <body>
@@ -97,14 +99,11 @@
 
     
 
-    // Function to load comments for a specific post
     function loadComments(postId) {
     const commentList = $(`.webinfo[data-post-id="${postId}"] .comment-list`);
 
-    // Clear existing comments
     commentList.empty();
 
-    // Retrieve comments from Firestore subcollection
     db.collection('dudutip')
         .doc(postId)
         .collection('comments')
@@ -118,7 +117,7 @@
             commentList.append(commentItem);
           });
         }, (error) => {
-          console.log(error);
+          
         });
     }
 
@@ -165,6 +164,7 @@
 
       const postId = doc.id;
 
+<<<<<<< Updated upstream
       // Add event listener to like button
       $(`.like-button[data-doc-id="${postId}"]`).click(function () {
       const docId = $(this).data('doc-id');
@@ -190,6 +190,58 @@
               .catch((error) => {
               console.log(error);
               alert('회원만 좋아요를 할 수 있습니다.');
+=======
+              $(`.like-icon[data-doc-id="${postId}"]`).click(function () {
+                const docId = $(this).data('doc-id');
+                const likeCountElement = $(this).siblings('.like-count');
+                let currentLikeCount = parseInt(likeCountElement.text());
+                const isLiked = $(this).hasClass('filled');
+
+                if (isLiked) {
+                  currentLikeCount--;
+                  db.collection('dudutip')
+                    .doc(docId)
+                    .update({
+                      like: currentLikeCount,
+                      liked: false
+                    })
+                    .then(() => {
+                      likeCountElement.text(currentLikeCount);
+                      $(this).removeClass('filled');
+
+                      const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
+                      const index = likedPosts.indexOf(docId);
+                      if (index > -1) {
+                        likedPosts.splice(index, 1);
+                        localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+                      }
+                    })
+                    .catch((error) => {
+                      
+                      
+                    });
+                } else {
+                  currentLikeCount++;
+                  db.collection('dudutip')
+                    .doc(docId)
+                    .update({
+                      like: currentLikeCount,
+                      liked: true
+                    })
+                    .then(() => {
+                      likeCountElement.text(currentLikeCount);
+                      $(this).addClass('filled');
+
+                      const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
+                      likedPosts.push(docId);
+                      localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+                    })
+                    .catch((error) => {
+                      
+                      
+                    });
+                }
+>>>>>>> Stashed changes
               });
           } else {
           // Increase like count and update like status
@@ -212,32 +264,35 @@
           }     
       });
 
+<<<<<<< Updated upstream
       // Load comments for the current post
       loadComments(postId);
               
+=======
+              loadComments(postId);
+            }
+>>>>>>> Stashed changes
           }
       
       }
     });
 
     $('.container').on('click', '.edit-post-button', function () {
-      const postId = $(this).closest('.webinfo').data('post-id'); // Get the post ID from the parent container
+      const postId = $(this).closest('.webinfo').data('post-id'); 
       const newWindow = window.open('edit-post.html?id=' + postId, '_blank', 'width=600,height=600');
       $(newWindow).on('beforeunload', function() {
         location.reload();
       });
     })
 
-    // Add event listener to add comment button using event delegation
     $('.container').on('click', '.add-comment-button', function () {
         const commentInput = $(this).siblings('.comment-input');
         const comment = commentInput.val().trim();
 
         if (comment !== '') {
-        const postId = $(this).closest('.webinfo').data('post-id'); // Get the post ID from the parent container
+        const postId = $(this).closest('.webinfo').data('post-id'); 
         const userId = localStorage.getItem('uid');
 
-        // Add the comment to Firestore subcollection
         db.collection('dudutip').doc(postId).collection('comments').add({
             comment: comment,
             userId: userId,
@@ -245,10 +300,10 @@
         })
             .then(() => {
             commentInput.val('');
-            loadComments(postId); // Refresh the comments after adding a new comment
+            loadComments(postId); 
             })
             .catch((error) => {
-            console.log(error);
+            
             alert('회원만 코멘트를 남길 수 있습니다.');
             });
         }
@@ -281,16 +336,13 @@
       if (user) {
         const userId = user.uid;
 
-        // Get the user document from the "user" collection
         db.collection('user')
           .doc(userId)
           .get()
           .then((doc) => {
             if (doc.exists) {
               const userData = doc.data();
-              // Check if the user has the admin role
               const isAdmin = userData.role === 'admin';
-              // Toggle the visibility of the .admin-button based on admin status
               const adminButton = document.querySelector('.admin-button');
               if (adminButton) {
                 adminButton.style.display = isAdmin ? 'block' : 'none';
@@ -301,28 +353,25 @@
                 button.style.display = isAdmin ? 'block' : 'none';
               });
 
-              console.log(user);
-              console.log(user.displayName);
+              
+              
               localStorage.setItem('user', JSON.stringify(user));
               hideLoginElements();
             } else {
-              // User document not found, treat as non-admin
-              console.log(user);
-              console.log(user.displayName);
+              
+              
               localStorage.setItem('user', JSON.stringify(user));
               hideLoginElements();
             }
           })
           .catch((error) => {
-            console.log(error);
-            // Error occurred, treat as non-admin
-            console.log(user);
-            console.log(user.displayName);
+            
+            
+            
             localStorage.setItem('user', JSON.stringify(user));
             hideLoginElements();
           });
       } else {
-        // User not logged in, treat as non-admin
         showLoginElements();
       }
     });

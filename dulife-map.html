@@ -98,6 +98,7 @@
         { name: 'Location 3', icon: 'icon-3.png', x: 400, y: 200 }
         ];
 
+<<<<<<< Updated upstream
         // Function to create map icons
         function createIcon(location) {
         var icon = document.createElement('div');
@@ -134,6 +135,94 @@
 
     function navigateTo(url) {
       window.location.href = url;
+=======
+
+    function getDownloadURL(filename) {
+      return storage.ref().child(filename).getDownloadURL();
+    }
+
+    var mapContainer = document.getElementById('map');
+    locations.forEach(function(location) {
+      var icon = createIcon(location);
+      mapContainer.appendChild(icon);
+    });
+
+    var mapImageRef = storage.ref().child('dumap.jpeg');
+    mapImageRef.getDownloadURL().then(function(url) {
+      mapContainer.style.backgroundImage = 'url(' + url + ')';
+    }).catch(function(error) {
+      
+    });
+
+    function createIcon(location) {
+      var iconElement = document.createElement('div');
+      iconElement.className = 'map-icon';
+      iconElement.style.top = location.y + 'px';
+      iconElement.style.left = location.x + 'px';
+
+      if (location.icon) {
+        getDownloadURL('iconImage/' + location.icon).then(function(url) {
+          var iconImage = document.createElement('img');
+          iconImage.src = url;
+          iconImage.alt = location.name;
+          iconImage.className = 'icon-image';
+          iconElement.appendChild(iconImage);
+        }).catch(function(error) {
+          
+        });
+      }
+
+      iconElement.addEventListener('mouseover', function(event) {
+        showTooltip(location, event);
+      });
+
+      iconElement.addEventListener('mouseout', function() {
+        hideTooltip();
+      });
+
+      return iconElement;
+    }
+
+    function showTooltip(location, event) {
+    var tooltip = document.getElementById('tooltip');
+
+    db.collection('dudumap')
+      .doc(location.id)
+      .get()
+      .then(function(doc) {
+        if (doc.exists) {
+          var data = doc.data();
+          tooltip.innerHTML =
+            '<div class="tooltip-content">' +
+            '<div class="tooltip-image">' +
+            '<img src="' + data.imageUrl + '" alt="' + data.buildingName + '" class="custom-image">' +
+            '</div>' +
+            '<h3>' +
+            data.buildingName +
+            '</h3>' +
+            '<p>위치: ' +
+            data.locationName +
+            '</p>' +
+            '<p>상세: ' +
+            data.detail +
+            '</p>' +
+            '</div>';
+
+          tooltip.style.left = event.pageX + 'px';
+          tooltip.style.top = event.pageY + 'px';
+
+          tooltip.style.visibility = 'visible';
+        }
+      })
+      .catch(function(error) {
+        
+      });
+  }
+
+    function hideTooltip() {
+      var tooltip = document.getElementById('tooltip');
+      tooltip.style.visibility = 'hidden';
+>>>>>>> Stashed changes
     }
 
   </script>
@@ -142,8 +231,8 @@
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          console.log(user);
-          console.log(user.displayName);
+          
+          
           localStorage.setItem('user', JSON.stringify(user));
           hideLoginElements();
         } else {
